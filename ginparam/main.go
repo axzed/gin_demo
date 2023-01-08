@@ -7,9 +7,9 @@ import (
 )
 
 type User struct {
-	Id      int64  `form:"id"`
-	Name    string `form:"name"`
-	Address string `form:"address" binding:"required"`
+	Id      int64    `form:"id"`
+	Name    string   `form:"name"`
+	Address []string `form:"address" binding:"required"`
 }
 
 func login(c *gin.Context) {
@@ -42,10 +42,13 @@ func main() {
 		c.JSON(http.StatusOK, user)
 	})
 	r.GET("/user/save2", func(c *gin.Context) {
-		address := c.QueryArray("address")
-		c.JSON(200, gin.H{
-			"a": address,
-		})
+		var user User
+		err := c.ShouldBind(&user)
+		if err != nil {
+			log.Println(err)
+		}
+		c.JSON(http.StatusOK, user)
+		//address := c.QueryArray("address")
 	})
 	r.POST("/user/login", func(c *gin.Context) {
 		username := c.PostForm("username")
